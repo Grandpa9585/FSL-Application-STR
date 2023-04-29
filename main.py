@@ -14,22 +14,38 @@ import cv2
 
 
 def main():
-    video_input_object = cv2.VideoCapture(0)
+    video_input_object = cv2.VideoCapture(1)
+    video_input_object_2 = cv2.VideoCapture(0)
     
     # camera input
     while True:
         # frame by frame processing
 
-        ret, frame = video_input_object.read()
+        ret0, frame = video_input_object.read()
+        ret1, otherFrame = video_input_object_2.read()
 
-        cv2.imwrite("images\main_image.png", frame)
+        if ret0:
+            cv2.imwrite("images\main_image.png", frame)
 
-        temporary_frame_1 = cv2.imread("images\main_image.png")
+        if ret1:
+            cv2.imwrite("images\mainer_image.png", otherFrame)
+
+        """temporary_frame_1 = cv2.imread("images\main_image.png")
         temporary_frame_2 = cv2.GaussianBlur(temporary_frame_1, (3, 3), 0)
         current_video_frame = cv2.cvtColor(temporary_frame_2, cv2.COLOR_BGR2GRAY)
-        output_frame = getConvolutions("canny_edge_detection", current_video_frame)
+        output_frame = getConvolutions("canny_edge_detection", current_video_frame)"""
 
-        cv2.imshow('convolution', output_frame)
+        red = cv2.imread("images\main_image.png")
+        red[:, :, 1] = 0
+        red[:, :, 0] = 0
+
+        green = cv2.imread("images\mainer_image.png")
+        green[:, :, 2] = 0
+
+        cv2.imshow('red', red)  # to be used for phys proj
+        cv2.imshow('green', green)  # to be used for phys proj
+
+        cv2.imshow('combined', cv2.addWeighted(green, 1, red, 1, 1))
 
         # break condition
         if cv2.waitKey(1) & 0xFF == ord('q'):
