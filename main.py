@@ -1,21 +1,29 @@
 """
-Main
+    chairs in the court
+    tent surrounds the court (8:00 to 8:30 am)
 
-UI elements formatting should only be here but for now it is:
-    April 2023: where all the boilerplate code is put in initially
-                refactoring the sample code into something expandable
-                code will not be written as OOP just yet
-                no Kivy just yet
+    consider cropping the feed and doing adjustments in code
+    Too close won't work
+    focal length
+    missing third layer????
+
+
+
+    to do
+    1. border
+    2. adjust focal length
+    3. set viewing point for best experience
 """
 
 # from skimage.exposure import rescale_intensity
 import numpy as numpy_object
 import cv2
+import cv
 
 
 def main():
     video_input_object = cv2.VideoCapture(1)
-    video_input_object_2 = cv2.VideoCapture(0)
+    video_input_object_2 = cv2.VideoCapture(2)
     
     # camera input
     while True:
@@ -25,10 +33,12 @@ def main():
         ret1, otherFrame = video_input_object_2.read()
 
         if ret0:
-            cv2.imwrite("images\main_image.png", frame)
+            cv2.imwrite("images\main_image.png", frame)#cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE))
 
         if ret1:
-            cv2.imwrite("images\mainer_image.png", otherFrame)
+            cv2.imwrite("images\mainer_image.png", cv2.rotate(otherFrame, cv2.ROTATE_180))
+            # temp = cv2.rotate(cv2.imread("images\mainer_image.png"), cv2.ROTATE_180)
+            # cv2.imwrite("images\mainer_image.png", temp)
 
         """temporary_frame_1 = cv2.imread("images\main_image.png")
         temporary_frame_2 = cv2.GaussianBlur(temporary_frame_1, (3, 3), 0)
@@ -36,20 +46,41 @@ def main():
         output_frame = getConvolutions("canny_edge_detection", current_video_frame)"""
 
         red = cv2.imread("images\main_image.png")
-        red[:, :, 1] = 0
-        red[:, :, 0] = 0
+        red[:, :, 2] = 0    # red
+        #red[:, :, 1] = 0    # filter green
+        #red[:, :, 0] = 0    # filer blue
+
+        # red[:, :, 2] = 0
 
         green = cv2.imread("images\mainer_image.png")
-        green[:, :, 2] = 0
+        #green[:, :, 2] = 0
+        green[:, :, 1] = 0
+        qgreen[:, :, 0] = 0
 
-        cv2.imshow('red', red)  # to be used for phys proj
-        cv2.imshow('green', green)  # to be used for phys proj
+        # green[:, :, 1] = 0
+        # green[:, :, 0] = 0
 
-        cv2.imshow('combined', cv2.addWeighted(green, 1, red, 1, 1))
+        # cv2.imshow('red', cv2.resize(red, (0, 0), fx=0.5, fy=0.55))  # to be used for phys proj
+        # cv2.imshow('green', cv2.resize(green, (0, 0), fx=0.5, fy=0.55))  # to be used for phys proj
+
+        factor = 2.2  # resize
+        cv2.imshow('combined', cv2.addWeighted(
+            cv2.resize(green, (0, 0), fx=factor, fy=factor), 1,
+            cv2.resize(red, (0, 0), fx=factor, fy=factor), 1, 1))
+
+        factor_operator = 1
+        cv2.imshow('operator', cv2.addWeighted(
+            cv2.resize(green, (0, 0), fx=factor_operator, fy=factor_operator), 1,
+            cv2.resize(red, (0, 0), fx=factor_operator, fy=factor_operator), 1, 1))
 
         # break condition
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        if cv2.waitKey(1) & 0xFF == ord('e'):
+            cv2.imwrite("images\capture.png", cv2.addWeighted(
+            cv2.resize(green, (0, 0), fx=factor, fy=factor), 1,
+            cv2.resize(red, (0, 0), fx=factor, fy=factor), 1, 1))
 
 
 # convolution
